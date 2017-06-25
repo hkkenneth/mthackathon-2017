@@ -11,6 +11,8 @@ char server[] = "arduino.cc";
 
 void setup() {
   // put your setup code here, to run once:
+  randomSeed(millis());
+
   pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(9600);
   while (!Serial) {
@@ -38,14 +40,12 @@ void setup() {
 
   wrapCommand("Use single connection mode", "AT+CIPMUX=0");
 
-  wrapCommand("Connect", "AT+CIPSTART=\"TCP\",\"192.168.0.102\",12345", 3000);
+}
 
-  String httpPayload = "GET / HTTP/1.0";
+void sendPayload(unsigned long ts, int val, String devId) {
+  String httpPayload = "GET /?ts=" + String(ts) + "&val=" + String(val) + "&devId=" + devId + " HTTP/1.0";
   wrapCommand("Start sending", "AT+CIPSEND=" + String(httpPayload.length()));
-
   wrapCommand("Send", httpPayload);
-
-  wrapCommand("Closing", "AT+CIPCLOSE");
 }
 
 void wrapCommand(String message, String cmd) {
@@ -74,5 +74,10 @@ void loop() {
       setup();
     }
   }
+
+  wrapCommand("Connect", "AT+CIPSTART=\"TCP\",\"192.168.0.102\",12345", 3000);
+  sendPayload(millis(), random(180), "dev1");
+  wrapCommand("Closing", "AT+CIPCLOSE");
+  delay(10000);
 }
 
