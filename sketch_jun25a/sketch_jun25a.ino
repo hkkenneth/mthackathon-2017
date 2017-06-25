@@ -57,6 +57,35 @@ void setup() {
     Serial.print(Serial1.readString());
   }
 
+  Serial.println("Use single connection mode");
+  Serial1.println("AT+CIPMUX=0");
+  delay(1000);
+  while (Serial1.available() > 0) {
+    Serial.print(Serial1.readString());
+  }
+
+  Serial.println("Connect");
+  Serial1.println("AT+CIPSTART=\"TCP\",\"192.168.0.102\",12345");
+  delay(3000);
+  while (Serial1.available() > 0) {
+    Serial.print(Serial1.readString());
+  }
+
+  String httpPayload = "GET / HTTP/1.0";
+  wrapCommand("Start sending", "AT+CIPSEND=" + String(httpPayload.length()));
+
+  wrapCommand("Send", httpPayload);
+
+  wrapCommand("Closing", "AT+CIPCLOSE");
+}
+
+void wrapCommand(String message, String cmd) {
+  Serial.println(message);
+  Serial1.println(cmd);
+  delay(1000);
+  while (Serial1.available() > 0) {
+    Serial.print(Serial1.readString());
+  }
 }
 
 void loop() {
