@@ -26,50 +26,19 @@ void setup() {
 
   Serial.println("Serial Initialized");
 
-  Serial1.println("AT");
-  Serial.print(Serial1.readString());
+  wrapCommand("Init", "AT");
 
-  Serial.println("Set CWMODE");
-  Serial1.println("AT+CWMODE=1");
-  delay(1000);
-  while (Serial1.available() > 0) {
-    Serial.print(Serial1.readString());
-  }
+  wrapCommand("Set CWMODE", "AT+CWMODE=1");
 
-  Serial.println("Check CWMODE");
-  Serial1.println("AT+CWMODE?");
-  delay(1000);
-  while (Serial1.available() > 0) {
-    Serial.print(Serial1.readString());
-  }
+  wrapCommand("Check CWMODE", "AT+CWMODE?");
 
-  Serial.println("Check IP");
-  Serial1.println("AT+CIFSR");
-  delay(1000);
-  while (Serial1.available() > 0) {
-    Serial.print(Serial1.readString());
-  }
+  wrapCommand("Check IP", "AT+CIFSR");
 
-  Serial.println("Connect Wifi");
-  Serial1.println("AT+CWJAP=\"patcklui\",\"patck27159039\"");
-  delay(1000);
-  while (Serial1.available() > 0) {
-    Serial.print(Serial1.readString());
-  }
+  wrapCommand("Connect Wifi","AT+CWJAP=\"patcklui\",\"patck27159039\"");
 
-  Serial.println("Use single connection mode");
-  Serial1.println("AT+CIPMUX=0");
-  delay(1000);
-  while (Serial1.available() > 0) {
-    Serial.print(Serial1.readString());
-  }
+  wrapCommand("Use single connection mode", "AT+CIPMUX=0");
 
-  Serial.println("Connect");
-  Serial1.println("AT+CIPSTART=\"TCP\",\"192.168.0.102\",12345");
-  delay(3000);
-  while (Serial1.available() > 0) {
-    Serial.print(Serial1.readString());
-  }
+  wrapCommand("Connect", "AT+CIPSTART=\"TCP\",\"192.168.0.102\",12345", 3000);
 
   String httpPayload = "GET / HTTP/1.0";
   wrapCommand("Start sending", "AT+CIPSEND=" + String(httpPayload.length()));
@@ -80,9 +49,13 @@ void setup() {
 }
 
 void wrapCommand(String message, String cmd) {
+  wrapCommand(message, cmd, 1000);
+}
+
+void wrapCommand(String message, String cmd, int waitTime) {
   Serial.println(message);
   Serial1.println(cmd);
-  delay(1000);
+  delay(waitTime);
   while (Serial1.available() > 0) {
     Serial.print(Serial1.readString());
   }
